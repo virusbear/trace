@@ -4,10 +4,11 @@ import io.opentracing.Scope
 import io.opentracing.Span
 import io.opentracing.Tracer
 import io.opentracing.util.GlobalTracer
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.ThreadContextElement
+import kotlinx.coroutines.isActive
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 class CoroutineSpan(
     val tracer: Tracer = GlobalTracer.get() ?: error("No Tracer registered to GlobalTracer"),

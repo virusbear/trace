@@ -1,15 +1,16 @@
 package io.github.virusbear.trace
 
 import io.opentracing.Span
+import io.opentracing.SpanContext
 import io.opentracing.Tracer
 
-fun Tracer.buildSpan(operation: String, tags: Map<String, String>, parent: Span? = null): Span =
+fun Tracer.buildSpan(operation: String, tags: Map<String, String>, parent: SpanContext? = null, builder: Tracer.SpanBuilder.() -> Unit = {}, ): Span =
     buildSpan(operation) {
         withTags(tags).run {
             parent?.let {
-                asChildOf(parent)
+                asChildOf(it)
             } ?: this
-        }
+        }.apply(builder)
     }
 
 fun Tracer.SpanBuilder.withTags(tags: Map<String, String>): Tracer.SpanBuilder =

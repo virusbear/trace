@@ -1,14 +1,14 @@
 package io.github.virusbear.trace
 
-import io.opentracing.Span
+import io.opentracing.SpanContext
 import io.opentracing.Tracer
 import io.opentracing.util.GlobalTracer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 
-suspend fun <T> Tracer.withSpan(operation: String, tags: Map<String, String> = emptyMap(), parent: Span? = null, block: suspend CoroutineScope.(SpanScope) -> T): T {
-    val span = buildSpan(operation, tags, parent)
+suspend fun <T> Tracer.withSpan(operation: String, tags: Map<String, String> = emptyMap(), parent: SpanContext? = null, builder: Tracer.SpanBuilder.() -> Unit = {}, block: suspend CoroutineScope.(SpanScope) -> T): T {
+    val span = buildSpan(operation, tags, parent, builder)
 
     try {
         val context = if(coroutineContext[CoroutineSpan]?.span != span) {
@@ -25,20 +25,20 @@ suspend fun <T> Tracer.withSpan(operation: String, tags: Map<String, String> = e
     }
 }
 
-suspend inline fun <T> withSpan(operation: String, tags: Map<String, String> = emptyMap(), parent: Span? = null, noinline block: suspend CoroutineScope.(SpanScope) -> T): T {
+suspend inline fun <T> withSpan(operation: String, tags: Map<String, String> = emptyMap(), parent: SpanContext? = null, noinline builder: Tracer.SpanBuilder.() -> Unit = {}, noinline block: suspend CoroutineScope.(SpanScope) -> T): T {
     val tracer =
         coroutineContext[CoroutineSpan]?.tracer
             ?: error("No CoroutineSpan in current context. Make sure to call SpanScope.withSpan or Tracer.withSpan to ensure proper trace propagation in coroutines")
 
-    return tracer.withSpan(operation, tags, parent, block)
+    return tracer.withSpan(operation, tags, parent, builder, block)
 }
 
-suspend fun <T> SpanScope.withSpan(operation: String, tags: Map<String, String> = emptyMap(), block: suspend CoroutineScope.(SpanScope) -> T): T {
-    return tracer.withSpan(operation, tags, span, block)
+suspend fun <T> SpanScope.withSpan(operation: String, tags: Map<String, String> = emptyMap(), builder: Tracer.SpanBuilder.() -> Unit = {}, block: suspend CoroutineScope.(SpanScope) -> T): T {
+    return tracer.withSpan(operation, tags, span.context(), builder, block)
 }
 
-inline fun <T> Tracer.span(operation: String, tags: Map<String, String> = emptyMap(), parent: Span? = null, block: SpanScope.() -> T): T {
-    val span = buildSpan(operation, tags, parent)
+inline fun <T> Tracer.span(operation: String, tags: Map<String, String> = emptyMap(), parent: SpanContext? = null, noinline builder: Tracer.SpanBuilder.() -> Unit = {}, block: SpanScope.() -> T): T {
+    val span = buildSpan(operation, tags, parent, builder)
 
     val scope = activateSpan(span)
 
@@ -50,14 +50,14 @@ inline fun <T> Tracer.span(operation: String, tags: Map<String, String> = emptyM
     }
 }
 
-fun <T> SpanScope.span(operation: String, tags: Map<String, String> = emptyMap(), block: SpanScope.() -> T): T {
-    return tracer.span(operation, tags, span, block)
+fun <T> SpanScope.span(operation: String, tags: Map<String, String> = emptyMap(), builder: Tracer.SpanBuilder.() -> Unit = {}, block: SpanScope.() -> T): T {
+    return tracer.span(operation, tags, span.context(), builder, block)
 }
 
-inline fun <T> span(operation: String, tags: Map<String, String> = emptyMap(), block: SpanScope.() -> T): T {
+inline fun <T> span(operation: String, tags: Map<String, String> = emptyMap(), noinline builder: Tracer.SpanBuilder.() -> Unit = {}, block: SpanScope.() -> T): T {
     val tracer =
         GlobalTracer.get()
             ?: error("Unable to retrieve non-null tracer to create span")
 
-    return tracer.span(operation, tags, null, block)
+    return tracer.span(operation, tags, null, builder, block)
 }

@@ -40,6 +40,9 @@ class SenderBuilder {
     fun http(endpoint: String) {
         builder.withEndpoint(endpoint)
     }
+
+    fun build() =
+        builder
 }
 
 class ReporterBuilder {
