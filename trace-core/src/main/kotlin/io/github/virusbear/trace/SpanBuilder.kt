@@ -4,13 +4,13 @@ import io.opentracing.Span
 import io.opentracing.SpanContext
 import io.opentracing.Tracer
 
-fun Tracer.buildSpan(operation: String, tags: Map<String, String>, parent: SpanContext? = null, builder: Tracer.SpanBuilder.() -> Unit = {}, ): Span =
+fun Tracer.buildSpan(operation: String, tags: Map<String, String>, parent: SpanContext? = null): Span =
     buildSpan(operation) {
         withTags(tags).run {
             parent?.let {
                 asChildOf(it)
             } ?: this
-        }.apply(builder)
+        }
     }
 
 fun Tracer.SpanBuilder.withTags(tags: Map<String, String>): Tracer.SpanBuilder =
