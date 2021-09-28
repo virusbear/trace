@@ -1,8 +1,13 @@
-package io.github.virusbear.trace
+package io.github.virusbear.trace.jaeger
 
 import io.jaegertracing.Configuration
+import io.opentracing.ScopeManager
 import io.opentracing.Tracer
 
+@DslMarker
+annotation class JaegerTracerBuilder
+
+@JaegerTracerBuilder
 class SamplerBuilder {
     private val builder = Configuration.SamplerConfiguration()
 
@@ -25,10 +30,11 @@ class SamplerBuilder {
         builder.withType("remote")
     }
 
-    fun build(): Configuration.SamplerConfiguration =
+    internal fun build(): Configuration.SamplerConfiguration =
         builder
 }
 
+@JaegerTracerBuilder
 class SenderBuilder {
     private val builder = Configuration.SenderConfiguration()
 
@@ -41,10 +47,11 @@ class SenderBuilder {
         builder.withEndpoint(endpoint)
     }
 
-    fun build() =
+    internal fun build() =
         builder
 }
 
+@JaegerTracerBuilder
 class ReporterBuilder {
     private val builder = Configuration.ReporterConfiguration()
 
@@ -66,28 +73,43 @@ class ReporterBuilder {
             builder.withMaxQueueSize(value)
         }
 
+    @JaegerTracerBuilder
     fun sender(block: SenderBuilder.() -> Unit) {
         builder.withSender(SenderBuilder().apply(block).build())
     }
 
-    fun build(): Configuration.ReporterConfiguration =
+    internal fun build(): Configuration.ReporterConfiguration =
         builder
 }
 
+@JaegerTracerBuilder
 class TracerBuilder(serviceName: String) {
     private val builder = Configuration(serviceName)
+    private var scopeManagerFactory: (() -> ScopeManager)? = null
 
+    @JaegerTracerBuilder
     fun sampler(block: SamplerBuilder.() -> Unit) {
         builder.withSampler(SamplerBuilder().apply(block).build())
     }
 
+    @JaegerTracerBuilder
     fun reporter(block: ReporterBuilder.() -> Unit) {
         builder.withReporter(ReporterBuilder().apply(block).build())
     }
 
-    fun build(): Tracer =
-        builder.tracer
+    @JaegerTracerBuilder
+    fun scopeManager(block: () -> ScopeManager) {
+        scopeManagerFactory = block
+    }
+
+    internal fun build(): Tracer =
+        builder.tracerBuilder.let { builder ->
+            scopeManagerFactory?.let { factory ->
+                builder.withScopeManager(factory())
+            } ?: builder
+        }.build()
 }
 
+@JaegerTracerBuilder
 fun tracer(name: String, block: TracerBuilder.() -> Unit): Tracer =
     TracerBuilder(name).also(block).build()
