@@ -16,6 +16,9 @@ on:
   # Triggers the workflow on push or pull request events but only for default and protected branches
   push:
     branches: [ main ]
+    paths-ignore: 
+    - ".github/**"
+    - "README.md"
   pull_request:
     branches: [ main ]
   schedule:
