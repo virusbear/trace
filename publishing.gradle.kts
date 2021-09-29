@@ -2,7 +2,7 @@ import java.net.URI
 
 apply(plugin = "maven-publish")
 apply(plugin = "java-library")
-//apply(plugin = "signing")
+apply(plugin = "signing")
 
 tasks {
     val sourcesJar by creating(Jar::class) {
@@ -17,6 +17,11 @@ tasks {
         from(javadoc)
     }
 
+    val publish by getting
+    val build by getting
+
+    publish.dependsOn.add(build)
+
     fun ArtifactHandler.archives(artifactNotation: Any): PublishArtifact =
         add("archives", artifactNotation)
 
@@ -29,6 +34,11 @@ tasks {
 }
 
 afterEvaluate {
+    configure<SigningExtension> {
+        useInMemoryPgpKeys(System.getenv("GPG_SIGNING_KEY"), System.getenv("GPG_SIGNING_KEY_PASSPHRASE"))
+        sign(project.the<PublishingExtension>().publications)
+    }
+
     configure<PublishingExtension> {
         repositories {
             maven {
@@ -74,7 +84,3 @@ afterEvaluate {
         }
     }
 }
-
-/*signing {
-    sign(publishing.publications)
-}*/
