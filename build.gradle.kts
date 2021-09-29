@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "1.5.30" apply false
 }
@@ -13,5 +15,9 @@ allprojects {
         mavenCentral()
         mavenLocal()
         google()
+    }
+
+    tasks.withType<KotlinCompile> {
+        sourceCompatibility = "11"
     }
 }

@@ -8,7 +8,7 @@ tasks {
     val sourcesJar by creating(Jar::class) {
         archiveClassifier.set("sources")
 
-        from(project.the<SourceSetContainer>().getByName("main"))
+        from(project.the<SourceSetContainer>().getByName("main").allSource)
     }
     val javadocJar by creating(Jar::class) {
         val javadoc by getting
