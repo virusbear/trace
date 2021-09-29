@@ -7,7 +7,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 
-internal suspend inline fun <T> Tracer.withSpan(operation: String, tags: Map<String, String> = emptyMap(), parent: SpanContext? = null, crossinline block: suspend CoroutineScope.(SpanScope) -> T): T {
+internal suspend inline fun <T> Tracer.withSpan(
+    operation: String,
+    tags: Map<String, String> = emptyMap(),
+    parent: SpanContext? = null,
+    crossinline block: suspend CoroutineScope.(SpanScope) -> T
+): T {
     val span = buildSpan(operation, tags, parent)
 
     try {
@@ -25,7 +30,12 @@ internal suspend inline fun <T> Tracer.withSpan(operation: String, tags: Map<Str
     }
 }
 
-suspend fun <T> withSpan(operation: String, tags: Map<String, String> = emptyMap(), parent: SpanContext? = null, block: suspend CoroutineScope.(SpanScope) -> T): T {
+suspend fun <T> withSpan(
+    operation: String,
+    tags: Map<String, String> = emptyMap(),
+    parent: SpanContext? = null,
+    block: suspend CoroutineScope.(SpanScope) -> T
+): T {
     val tracer =
         coroutineContext[CoroutineSpan]?.tracer
             ?: GlobalTracer.get()
@@ -34,11 +44,20 @@ suspend fun <T> withSpan(operation: String, tags: Map<String, String> = emptyMap
     return tracer.withSpan(operation, tags, parent ?: coroutineContext[CoroutineSpan]?.span?.context(), block)
 }
 
-suspend fun <T> SpanScope.withSpan(operation: String, tags: Map<String, String> = emptyMap(), block: suspend CoroutineScope.(SpanScope) -> T): T {
+suspend fun <T> SpanScope.withSpan(
+    operation: String,
+    tags: Map<String, String> = emptyMap(),
+    block: suspend CoroutineScope.(SpanScope) -> T
+): T {
     return tracer.withSpan(operation, tags, span.context(), block)
 }
 
-inline fun <T> Tracer.span(operation: String, tags: Map<String, String> = emptyMap(), parent: SpanContext? = null, block: SpanScope.() -> T): T {
+inline fun <T> Tracer.span(
+    operation: String,
+    tags: Map<String, String> = emptyMap(),
+    parent: SpanContext? = null,
+    block: SpanScope.() -> T
+): T {
     val span = buildSpan(operation, tags, parent)
 
     val scope = activateSpan(span)
@@ -51,11 +70,19 @@ inline fun <T> Tracer.span(operation: String, tags: Map<String, String> = emptyM
     }
 }
 
-fun <T> SpanScope.span(operation: String, tags: Map<String, String> = emptyMap(), block: SpanScope.() -> T): T {
+fun <T> SpanScope.span(
+    operation: String,
+    tags: Map<String, String> = emptyMap(),
+    block: SpanScope.() -> T
+): T {
     return tracer.span(operation, tags, span.context(), block)
 }
 
-inline fun <T> span(operation: String, tags: Map<String, String> = emptyMap(), block: SpanScope.() -> T): T {
+inline fun <T> span(
+    operation: String,
+    tags: Map<String, String> = emptyMap(),
+    block: SpanScope.() -> T
+): T {
     val tracer =
         GlobalTracer.get()
             ?: error("Unable to retrieve non-null tracer to create span")
