@@ -59,7 +59,9 @@ afterEvaluate {
                 artifactId = extra["artifactId"]?.toString()
                 version = extra["version"]?.toString()
 
-                from(components["java"])
+                artifact(project.tasks.getByName("sourcesJar"))
+                artifact(project.tasks.getByName("javadocJar"))
+                artifact(project.tasks.getByName("jar"))
 
                 pom {
                     name.set(artifactId)
