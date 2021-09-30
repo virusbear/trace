@@ -81,6 +81,16 @@ afterEvaluate {
                     scm {
                         url.set("https://github.com/virusbear/trace")
                     }
+                    withXml {
+                        val dependencies = asNode().appendNode("dependencies")
+                        project.configurations.getByName("api").allDependencies.forEach {
+                            val dependency = dependencies.appendNode("dependency")
+                            dependency.appendNode("groupId", it.group)
+                            dependency.appendNode("artifactId", it.name)
+                            dependency.appendNode("version", it.version)
+                            dependency.appendNode("scope", "compile")
+                        }
+                    }
                 }
             }
         }
