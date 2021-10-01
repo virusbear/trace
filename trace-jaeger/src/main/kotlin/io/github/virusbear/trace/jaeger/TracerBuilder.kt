@@ -38,6 +38,24 @@ class SamplerBuilder {
 class SenderBuilder {
     private val builder = Configuration.SenderConfiguration()
 
+    var userName: String
+        get() = builder.authUsername
+        set(value) {
+            builder.withAuthUsername(value)
+        }
+
+    var password: String
+        get() = builder.authPassword
+        set(value) {
+            builder.withAuthPassword(value)
+        }
+
+    var token: String
+        get() = builder.authToken
+        set(value) {
+            builder.withAuthToken(value)
+        }
+
     fun udp(host: String, port: Int) {
         builder.withAgentHost(host)
         builder.withAgentPort(port)
