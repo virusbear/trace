@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.virusbear.trace"
-version = "1.0.1"
+version = "1.0.2"
 
 allprojects {
     extra["groupId"] = rootProject.group
