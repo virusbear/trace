@@ -3,6 +3,7 @@ package io.github.virusbear.trace
 import io.opentracing.Scope
 import io.opentracing.Span
 import io.opentracing.Tracer
+import io.opentracing.noop.NoopTracerFactory
 import io.opentracing.util.GlobalTracer
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.ThreadContextElement
@@ -11,7 +12,7 @@ import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
 class CoroutineSpan(
-    val tracer: Tracer = GlobalTracer.get() ?: error("No Tracer registered to GlobalTracer"),
+    val tracer: Tracer = GlobalTracer.get() ?: NoopTracerFactory.create(),
     val span: Span? = tracer.activeSpan()
 ): ThreadContextElement<Scope>, AbstractCoroutineContextElement(CoroutineSpan) {
     companion object: CoroutineContext.Key<CoroutineSpan>

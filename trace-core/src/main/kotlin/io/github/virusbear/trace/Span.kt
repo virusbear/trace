@@ -2,6 +2,7 @@ package io.github.virusbear.trace
 
 import io.opentracing.SpanContext
 import io.opentracing.Tracer
+import io.opentracing.noop.NoopTracerFactory
 import io.opentracing.util.GlobalTracer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
@@ -39,7 +40,7 @@ suspend fun <T> withSpan(
     val tracer =
         coroutineContext[CoroutineSpan]?.tracer
             ?: GlobalTracer.get()
-            ?: error("No Tracer in current context. Make sure to call SpanScope.withSpan, Tracer.withSpan or register a tracer in GlobalTracer to ensure proper trace propagation in coroutines")
+            ?: NoopTracerFactory.create()
 
     return tracer.withSpan(operation, tags, parent ?: coroutineContext[CoroutineSpan]?.span?.context(), block)
 }
@@ -85,7 +86,7 @@ inline fun <T> span(
 ): T {
     val tracer =
         GlobalTracer.get()
-            ?: error("Unable to retrieve non-null tracer to create span")
+            ?: NoopTracerFactory.create()
 
     return tracer.span(operation, tags, tracer.activeSpan()?.context(), block)
 }
