@@ -20,6 +20,7 @@ tasks {
     val jar: Jar by tasks
 
     jar.apply {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         from(project.configurations.getByName("bundle").map { if(it.isDirectory) it else zipTree(it) })
     }
 
