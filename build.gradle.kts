@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.virusbear.trace"
-version = "1.0.3"
+version = "1.0.4"
 
 allprojects {
     extra["groupId"] = rootProject.group
@@ -20,4 +20,7 @@ allprojects {
     tasks.withType<KotlinCompile> {
         sourceCompatibility = "11"
     }
+
+    configurations.create("bundle")
+    configurations.create("publish")
 }

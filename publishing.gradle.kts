@@ -17,6 +17,12 @@ tasks {
         from(javadoc)
     }
 
+    val jar: Jar by tasks
+
+    jar.apply {
+        from(project.configurations.getByName("bundle").map { if(it.isDirectory) it else zipTree(it) })
+    }
+
     val publish by getting
     val build by getting
 
@@ -26,7 +32,6 @@ tasks {
         add("archives", artifactNotation)
 
     artifacts {
-        val jar by getting
         archives(sourcesJar)
         archives(javadocJar)
         archives(jar)
@@ -83,7 +88,7 @@ afterEvaluate {
                     }
                     withXml {
                         val dependencies = asNode().appendNode("dependencies")
-                        project.configurations.getByName("api").allDependencies.forEach {
+                        project.configurations.getByName("publish").allDependencies.forEach {
                             val dependency = dependencies.appendNode("dependency")
                             dependency.appendNode("groupId", it.group)
                             dependency.appendNode("artifactId", it.name)

@@ -5,9 +5,14 @@ plugins {
 extra["artifactId"] = "trace-core"
 extra["description"] = "lightweight kotlin dsl wrapper for OpenTracing API"
 
+val publish by configurations.getting
+
 dependencies {
     implementation(kotlin("stdlib"))
+    publish("io.opentracing:opentracing-api:0.33.0")
     api("io.opentracing:opentracing-api:0.33.0")
+
+    publish("io.opentracing:opentracing-util:0.33.0")
     api("io.opentracing:opentracing-util:0.33.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 }
