@@ -49,14 +49,14 @@ publishing {
         }
     }
 }
-/*
+
 signing {
     setRequired { !project.version.toString().endsWith("-SNAPSHOT") && !project.hasProperty("skipSigning") }
 
     useInMemoryPgpKeys(System.getenv("GPG_SIGNING_KEY"), System.getenv("GPG_SIGNING_KEY_PASSPHRASE"))
     sign(publishing.publications["mavenJava"])
 }
-*/
+
 tasks.javadoc {
     if(JavaVersion.current().isJava9Compatible) {
         (options as StandardJavadocDocletOptions).apply {

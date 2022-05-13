@@ -12,7 +12,7 @@ subprojects {
         google()
     }
 
-    group = "io.github.virusbear.trace"
+    group = "com.virusbear.trace"
     version = "1.0.5"
 
     tasks.withType<KotlinCompile> {
