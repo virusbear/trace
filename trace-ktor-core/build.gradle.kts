@@ -1,13 +1,13 @@
 plugins {
     kotlin("jvm")
+    `library-publishing`
 }
 
-val publish by configurations.getting
+val ktor_version: String by project
 
 dependencies {
     implementation(kotlin("stdlib"))
-    publish("io.github.virusbear.trace:trace-core:${rootProject.version}")
     api(project(":trace-core"))
-    implementation("io.ktor:ktor-utils-jvm:1.6.3")
-    implementation("io.ktor:ktor-http-jvm:1.6.3")
+    api("io.ktor:ktor-utils-jvm:$ktor_version")
+    api("io.ktor:ktor-http-jvm:$ktor_version")
 }
