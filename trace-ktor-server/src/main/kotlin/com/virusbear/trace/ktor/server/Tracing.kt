@@ -1,10 +1,10 @@
-package io.github.virusbear.trace.ktor.server
+package com.virusbear.trace.ktor.server
 
-import io.github.virusbear.trace.asTextMap
-import io.github.virusbear.trace.withSpan
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.request.*
+import com.virusbear.trace.asTextMap
+import com.virusbear.trace.withSpan
+import io.ktor.server.application.*
+import io.ktor.server.logging.*
+import io.ktor.server.request.*
 import io.ktor.util.*
 import io.opentracing.SpanContext
 import io.opentracing.Tracer
@@ -15,7 +15,7 @@ import io.opentracing.util.GlobalTracer
 class Tracing {
     class Configuration
 
-    companion object Feature: ApplicationFeature<ApplicationCallPipeline, Configuration, Tracing> {
+    companion object Plugin: BaseApplicationPlugin<ApplicationCallPipeline, Configuration, Tracing> {
         override val key: AttributeKey<Tracing> =
             AttributeKey("Tracing")
 

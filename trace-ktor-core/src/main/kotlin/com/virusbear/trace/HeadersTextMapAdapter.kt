@@ -1,4 +1,4 @@
-package io.github.virusbear.trace
+package com.virusbear.trace
 
 import io.ktor.http.*
 import io.ktor.util.*

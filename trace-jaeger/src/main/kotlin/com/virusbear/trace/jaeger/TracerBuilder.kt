@@ -1,4 +1,4 @@
-package io.github.virusbear.trace.jaeger
+package com.virusbear.trace.jaeger
 
 import io.jaegertracing.Configuration
 import io.opentracing.ScopeManager
